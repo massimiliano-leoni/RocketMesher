@@ -1,0 +1,33 @@
+This README file contains instructions on how to use the
+script mesher.py in conjunction with salome
+
+-- Preparing the script
+in mesher.py, add or remove rocket sections using commands like
+
+rocket.addSection(<sectionName>(<sectionParameters>))
+
+-- Running the script
+When done, launch salome from a terminal. It is _essential_ that salome be run
+from the directory of mesher.py, otherwise salome's interpreter won't find the
+other source files.
+
+The command to launch salome could be similar to
+~$ /path/to/salome/appli_V7_3_0/runAppli
+
+Once salome is running, select file->new, then select "Geometry" from the
+dropdown menu where "SALOME" is displayed and then do file->load script and
+select mesher.py.
+In salome's interpreter, in the lower part of the window, an "execfile" command
+appears. Any error in the execution of mesher.py is displayed in that
+interpreter.
+
+-- Visualization
+If execution terminated normally, Expand item "Geometry" in the object browser
+[left column] and press F5 to update the tree.
+A "rocket" object appears and you can make it visible by toggling the eye icon.
+
+You can observe the result in the viewer.
+Right-click the surface and choose display mode->shading for a better 3D
+rendering.
+Click the mouse-like icon in the viewer toolbar to enable 3D rotation of the
+generated surface.
