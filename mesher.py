@@ -84,7 +84,7 @@ geompy.addToStudy(channel,'channel')
 
 
 boundaryLayer = True
-fullyTetra = True
+fullyTetra = False
 
 # separate rocket from inlet, outlet and lateral wall
 subShapes = geompy.ExtractShapes(channel, geompy.ShapeType["FACE"], True)
@@ -94,22 +94,22 @@ for s in subShapes:
     tol = 1e-5
     coords = geompy.PointCoordinates(geompy.MakeCDG(s))
     if coords[0] < tol:
-        geompy.addToStudyInFather(channel,s,"outletWall")
+#        geompy.addToStudyInFather(channel,s,"outletWall")
         outletWall = s
     elif math.fabs(coords[0]-cylinderLength/2) < tol and \
          math.fabs(coords[1]) < tol and \
          math.fabs(coords[2]) < tol:
-        geompy.addToStudyInFather(channel,s,"lateralWall")
+#        geompy.addToStudyInFather(channel,s,"lateralWall")
         lateralWall = s
     elif coords[0] > cylinderLength - tol:
-        geompy.addToStudyInFather(channel,s,"inletWall")
+#        geompy.addToStudyInFather(channel,s,"inletWall")
         inletWall = s
     else:
         rocketFaces.append(s)
 
 rocketFacesGroup = geompy.CreateGroup(channel,geompy.ShapeType["FACE"])
 geompy.UnionList(rocketFacesGroup,rocketFaces)
-geompy.addToStudyInFather(channel,rocketFacesGroup,"Rocket faces group")
+#geompy.addToStudyInFather(channel,rocketFacesGroup,"Rocket faces group")
 
 
 
@@ -126,7 +126,7 @@ mesh.AddHypothesis(algo2D)
 
 algo3D = mesh.Tetrahedron(smeshBuilder.NETGEN_3D)
 n3_params = algo3D.Parameters()
-#n3_params.SetSecondOrder(True)
+n3_params.SetSecondOrder(True)
 n3_params.SetFineness(2) # {3 : Fine, 2 : Moderate} 
 n3_params.SetMaxSize(41)
 n3_params.SetMinSize(0.03)
@@ -142,9 +142,18 @@ if boundaryLayer:
                                      numberOfLayers,
                                      stretchFactor,
                                      ignoreFaces)
-    mesh.AddHypothesis(layersHyp)
 
 mesh.AddHypothesis(algo3D)
+
+# rocket submesh
+rocketSubmesh = mesh.GetSubMesh(rocketFacesGroup,"rocket")
+algo2Drocket = mesh.Triangle(smeshBuilder.NETGEN_1D2D,rocketFacesGroup)
+n12_params_rocket = algo2Drocket.Parameters()
+n12_params_rocket.SetFineness(2) # {3 : Fine, 2 : Moderate} 
+n12_params_rocket.SetMaxSize(5)
+n12_params_rocket.SetMinSize(0.03)
+mesh.AddHypothesis(algo2Drocket,rocketFacesGroup)
+
 mesh.Compute()
 
 if fullyTetra:
@@ -156,5 +165,5 @@ if fullyTetra:
     mesh.SplitVolumesIntoTetra(smesh.GetFilterFromCriteria([boundaryLayerCrit]),1)
 
 # export to file
-mesh.ExportMED("/tmp/rocketMesh.med",True)
+#mesh.ExportMED("/tmp/rocketMesh.med",True)
 #mesh.ExportSTL("rocketMesh.stl")
