@@ -86,23 +86,31 @@ geompy.addToStudy(channel,'channel')
 boundaryLayer = True
 fullyTetra = True
 
-if boundaryLayer:
-    # detect inlet, outlet and lateral wall
-    subShapes = geompy.ExtractShapes(channel, geompy.ShapeType["FACE"], True)
-    for s in subShapes:
-        tol = 1e-5
-        coords = geompy.PointCoordinates(geompy.MakeCDG(s))
-        if coords[0] < tol:
-            geompy.addToStudyInFather(channel,s,"outletWall")
-            outletWall = s.GetStudyID()
-        elif math.fabs(coords[0]-cylinderLength/2) < tol and \
-             math.fabs(coords[1]) < tol and \
-             math.fabs(coords[2]) < tol:
-            geompy.addToStudyInFather(channel,s,"lateralWall")
-            lateralWall = s.GetStudyID()
-        elif coords[0] > cylinderLength - tol:
-            geompy.addToStudyInFather(channel,s,"inletWall")
-            inletWall = s.GetStudyID()
+# separate rocket from inlet, outlet and lateral wall
+subShapes = geompy.ExtractShapes(channel, geompy.ShapeType["FACE"], True)
+rocketFaces = []
+
+for s in subShapes:
+    tol = 1e-5
+    coords = geompy.PointCoordinates(geompy.MakeCDG(s))
+    if coords[0] < tol:
+        geompy.addToStudyInFather(channel,s,"outletWall")
+        outletWall = s
+    elif math.fabs(coords[0]-cylinderLength/2) < tol and \
+         math.fabs(coords[1]) < tol and \
+         math.fabs(coords[2]) < tol:
+        geompy.addToStudyInFather(channel,s,"lateralWall")
+        lateralWall = s
+    elif coords[0] > cylinderLength - tol:
+        geompy.addToStudyInFather(channel,s,"inletWall")
+        inletWall = s
+    else:
+        rocketFaces.append(s)
+
+rocketFacesGroup = geompy.CreateGroup(channel,geompy.ShapeType["FACE"])
+geompy.UnionList(rocketFacesGroup,rocketFaces)
+geompy.addToStudyInFather(channel,rocketFacesGroup,"Rocket faces group")
+
 
 
 # start meshing!
@@ -130,11 +138,10 @@ if boundaryLayer:
     thickness = 0.5
     numberOfLayers = 5
     stretchFactor = 1.2
-    layersHyp = smesh.CreateHypothesis("ViscousLayers")
-    layersHyp.SetTotalThickness(thickness)
-    layersHyp.SetNumberLayers(numberOfLayers)
-    layersHyp.SetStretchFactor(stretchFactor)
-    layersHyp.SetFaces([inletWall,lateralWall,outletWall],1)
+    layersHyp = algo3D.ViscousLayers(thickness,
+                                     numberOfLayers,
+                                     stretchFactor,
+                                     ignoreFaces)
     mesh.AddHypothesis(layersHyp)
 
 mesh.AddHypothesis(algo3D)
