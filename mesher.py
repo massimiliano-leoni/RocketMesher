@@ -69,22 +69,17 @@ rocket = geompy.MakeFuseList(rocketParts)
 maxRadius = max([t.radius + max([f.height for f in t.fins]) for t in
                  body.sections if isinstance(t,Tube)])
 
-# I need this later
 cylinderLength = 1.5*body.length
-
-cylinder = geompy.MakeCylinderRH(6*maxRadius,cylinderLength)
+cylinderRadius = 6*maxRadius
+cylinderOffset = 0.8*0.5*body.length
+cylinder = geompy.MakeCylinderRH(cylinderRadius,cylinderLength)
 OY = geompy.MakeVectorDXDYDZ(0, 1, 0)
 geompy.Rotate(cylinder,OY,math.pi/2)
-
-geompy.TranslateDXDYDZ(rocket,0.8*0.5*body.length,0,0)
+geompy.TranslateDXDYDZ(rocket,cylinderOffset,0,0)
 
 # create cyl - rocket
 channel = geompy.MakeCut(cylinder,rocket)
 geompy.addToStudy(channel,'channel')
-
-
-boundaryLayer = True
-fullyTetra = False
 
 # separate rocket from inlet, outlet and lateral wall
 subShapes = geompy.ExtractShapes(channel, geompy.ShapeType["FACE"], True)
@@ -116,14 +111,16 @@ geompy.UnionList(rocketFacesGroup,rocketFaces)
 # start meshing!
 mesh = smesh.Mesh(channel,"channel")
 
+# define general 2D mesh parameters
 algo2D = mesh.Triangle(smeshBuilder.NETGEN_1D2D)
 n12_params = algo2D.Parameters()
-n12_params.SetFineness(2) # {3 : Fine, 2 : Moderate} 
+n12_params.SetFineness(1) # {3 : Fine, 2 : Moderate} 
 n12_params.SetMaxSize(41)
 n12_params.SetMinSize(0.03)
 
 mesh.AddHypothesis(algo2D)
 
+# define general 3D mesh parameters
 algo3D = mesh.Tetrahedron(smeshBuilder.NETGEN_3D)
 n3_params = algo3D.Parameters()
 n3_params.SetSecondOrder(True)
@@ -133,6 +130,11 @@ n3_params.SetMinSize(0.03)
 
 mesh.AddHypothesis(algo3D)
 
+# toggle boundary layer, prismatic or tetrahedral
+boundaryLayer = True
+fullyTetra = True
+
+# define boundary layer parameters
 if boundaryLayer:
     ignoreFaces = [outletWall,lateralWall, inletWall]
     thickness = 0.5
@@ -145,7 +147,7 @@ if boundaryLayer:
 
 mesh.AddHypothesis(algo3D)
 
-# rocket submesh
+# define rocket submesh 2D parameters
 rocketSubmesh = mesh.GetSubMesh(rocketFacesGroup,"rocket")
 algo2Drocket = mesh.Triangle(smeshBuilder.NETGEN_1D2D,rocketFacesGroup)
 n12_params_rocket = algo2Drocket.Parameters()
@@ -154,8 +156,10 @@ n12_params_rocket.SetMaxSize(5)
 n12_params_rocket.SetMinSize(0.03)
 mesh.AddHypothesis(algo2Drocket,rocketFacesGroup)
 
+# compute mesh and submesh
 mesh.Compute()
 
+# split any non-tetrahedron into tetrahedra
 if fullyTetra:
     boundaryLayerCrit = smesh.GetCriterion(SMESH.VOLUME,
                                            SMESH.FT_ElemGeomType,
