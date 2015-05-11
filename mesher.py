@@ -69,77 +69,97 @@ rocket = geompy.MakeFuseList(rocketParts)
 maxRadius = max([t.radius + max([f.height for f in t.fins]) for t in
                  body.sections if isinstance(t,Tube)])
 
-# I need this later
 cylinderLength = 1.5*body.length
-
-cylinder = geompy.MakeCylinderRH(6*maxRadius,cylinderLength)
+cylinderRadius = 6*maxRadius
+cylinderOffset = 0.8*0.5*body.length
+cylinder = geompy.MakeCylinderRH(cylinderRadius,cylinderLength)
 OY = geompy.MakeVectorDXDYDZ(0, 1, 0)
 geompy.Rotate(cylinder,OY,math.pi/2)
-
-geompy.TranslateDXDYDZ(rocket,0.8*0.5*body.length,0,0)
+geompy.TranslateDXDYDZ(rocket,cylinderOffset,0,0)
 
 # create cyl - rocket
 channel = geompy.MakeCut(cylinder,rocket)
 geompy.addToStudy(channel,'channel')
 
+# separate rocket from inlet, outlet and lateral wall
+subShapes = geompy.ExtractShapes(channel, geompy.ShapeType["FACE"], True)
+rocketFaces = []
 
-boundaryLayer = True
-fullyTetra = True
+for s in subShapes:
+    tol = 1e-5
+    coords = geompy.PointCoordinates(geompy.MakeCDG(s))
+    if coords[0] < tol:
+#        geompy.addToStudyInFather(channel,s,"outletWall")
+        outletWall = s
+    elif math.fabs(coords[0]-cylinderLength/2) < tol and \
+         math.fabs(coords[1]) < tol and \
+         math.fabs(coords[2]) < tol:
+#        geompy.addToStudyInFather(channel,s,"lateralWall")
+        lateralWall = s
+    elif coords[0] > cylinderLength - tol:
+#        geompy.addToStudyInFather(channel,s,"inletWall")
+        inletWall = s
+    else:
+        rocketFaces.append(s)
 
-if boundaryLayer:
-    # detect inlet, outlet and lateral wall
-    subShapes = geompy.ExtractShapes(channel, geompy.ShapeType["FACE"], True)
-    for s in subShapes:
-        tol = 1e-5
-        coords = geompy.PointCoordinates(geompy.MakeCDG(s))
-        if coords[0] < tol:
-            geompy.addToStudyInFather(channel,s,"outletWall")
-            outletWall = s.GetStudyID()
-        elif math.fabs(coords[0]-cylinderLength/2) < tol and \
-             math.fabs(coords[1]) < tol and \
-             math.fabs(coords[2]) < tol:
-            geompy.addToStudyInFather(channel,s,"lateralWall")
-            lateralWall = s.GetStudyID()
-        elif coords[0] > cylinderLength - tol:
-            geompy.addToStudyInFather(channel,s,"inletWall")
-            inletWall = s.GetStudyID()
+rocketFacesGroup = geompy.CreateGroup(channel,geompy.ShapeType["FACE"])
+geompy.UnionList(rocketFacesGroup,rocketFaces)
+#geompy.addToStudyInFather(channel,rocketFacesGroup,"Rocket faces group")
+
 
 
 # start meshing!
 mesh = smesh.Mesh(channel,"channel")
 
+# define general 2D mesh parameters
 algo2D = mesh.Triangle(smeshBuilder.NETGEN_1D2D)
 n12_params = algo2D.Parameters()
-n12_params.SetFineness(2) # {3 : Fine, 2 : Moderate} 
+n12_params.SetFineness(1) # {3 : Fine, 2 : Moderate} 
 n12_params.SetMaxSize(41)
 n12_params.SetMinSize(0.03)
 
 mesh.AddHypothesis(algo2D)
 
+# define general 3D mesh parameters
 algo3D = mesh.Tetrahedron(smeshBuilder.NETGEN_3D)
 n3_params = algo3D.Parameters()
-#n3_params.SetSecondOrder(True)
+n3_params.SetSecondOrder(True)
 n3_params.SetFineness(2) # {3 : Fine, 2 : Moderate} 
 n3_params.SetMaxSize(41)
 n3_params.SetMinSize(0.03)
 
 mesh.AddHypothesis(algo3D)
 
+# toggle boundary layer, prismatic or tetrahedral
+boundaryLayer = True
+fullyTetra = True
+
+# define boundary layer parameters
 if boundaryLayer:
     ignoreFaces = [outletWall,lateralWall, inletWall]
     thickness = 0.5
     numberOfLayers = 5
     stretchFactor = 1.2
-    layersHyp = smesh.CreateHypothesis("ViscousLayers")
-    layersHyp.SetTotalThickness(thickness)
-    layersHyp.SetNumberLayers(numberOfLayers)
-    layersHyp.SetStretchFactor(stretchFactor)
-    layersHyp.SetFaces([inletWall,lateralWall,outletWall],1)
-    mesh.AddHypothesis(layersHyp)
+    layersHyp = algo3D.ViscousLayers(thickness,
+                                     numberOfLayers,
+                                     stretchFactor,
+                                     ignoreFaces)
 
 mesh.AddHypothesis(algo3D)
+
+# define rocket submesh 2D parameters
+rocketSubmesh = mesh.GetSubMesh(rocketFacesGroup,"rocket")
+algo2Drocket = mesh.Triangle(smeshBuilder.NETGEN_1D2D,rocketFacesGroup)
+n12_params_rocket = algo2Drocket.Parameters()
+n12_params_rocket.SetFineness(2) # {3 : Fine, 2 : Moderate} 
+n12_params_rocket.SetMaxSize(5)
+n12_params_rocket.SetMinSize(0.03)
+mesh.AddHypothesis(algo2Drocket,rocketFacesGroup)
+
+# compute mesh and submesh
 mesh.Compute()
 
+# split any non-tetrahedron into tetrahedra
 if fullyTetra:
     boundaryLayerCrit = smesh.GetCriterion(SMESH.VOLUME,
                                            SMESH.FT_ElemGeomType,
@@ -149,5 +169,5 @@ if fullyTetra:
     mesh.SplitVolumesIntoTetra(smesh.GetFilterFromCriteria([boundaryLayerCrit]),1)
 
 # export to file
-mesh.ExportMED("/tmp/rocketMesh.med",True)
+#mesh.ExportMED("/tmp/rocketMesh.med",True)
 #mesh.ExportSTL("rocketMesh.stl")
