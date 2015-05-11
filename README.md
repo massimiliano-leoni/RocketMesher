@@ -1,7 +1,10 @@
 # Preparing the script
+
 In section *define body sections* add or remove rocket sections using commands like
 
+```
 rocket.addSection(<sectionName>(<sectionParameters>))
+```
 
 In section *define and build fins* define fin sections and build their profile,
 then define, build and append their group (Fins)
@@ -17,9 +20,11 @@ Finally, you can export the mesh to a file
 # Running the script
 When done, you can launch the script by cd-ing in the script directory and
 issuing the command
-<pre><code>
+
+```
 ~$ salome -t mesher.py
-</code></pre>
+```
+
 where "salome" is the command to execute salome.
 
 It is **essential** that salome be run
@@ -27,9 +32,11 @@ from the directory of mesher.py, otherwise salome's interpreter won't find the
 other source files.
 
 The command to launch salome could be similar to
+```
 ~$ /path/to/salome/appli_V7_5_1/runAppli
+```
 
-If you do not specify the -t option, salome will be run with the GUI.
+If you do not specify the `-t` option, salome will be run with the GUI.
 In this case, in salome's interpreter, in the lower part of the window, an "execfile" command
 appears. Any error in the execution of mesher.py is displayed in that
 interpreter.
