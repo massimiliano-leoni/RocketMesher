@@ -56,7 +56,7 @@ fins = Fins("fins",
              verticalOffset=10,
              angularOffset=0,
              scaleFactor=0.3,
-             theta=math.pi/3)
+             theta=0)
 fins.buildFins()
 rocketParts.append(fins.fins)
 
