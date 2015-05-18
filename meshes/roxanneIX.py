@@ -88,6 +88,7 @@ rocketFaces = []
 for s in subShapes:
     tol = 1e-5
     coords = geompy.PointCoordinates(geompy.MakeCDG(s))
+    print coords
     if coords[0] < tol:
 #        geompy.addToStudyInFather(channel,s,"outletWall")
         outletWall = s
