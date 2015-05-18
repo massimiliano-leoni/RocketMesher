@@ -70,7 +70,7 @@ class Fins(object):
         OZ = geompy.MakeVectorDXDYDZ(math.cos(self.theta + math.pi/2),
                                      0,
                                      math.sin(self.theta + math.pi/2))
-        fin = geompy.MakePrismVecH(face, OZ, self.height, self.scaleFactor)
+        fin = geompy.MakePrismVecH(face, OZ, self.height/math.cos(self.theta), self.scaleFactor)
         
         OX = geompy.MakeVectorDXDYDZ(1, 0, 0)
         fins = []
