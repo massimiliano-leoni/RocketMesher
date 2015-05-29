@@ -6,7 +6,22 @@ geompy = geomBuilder.New(salome.myStudy)
 import math
 
 class Fins(object):
-    """represents a group of fins"""
+    """Represents a group of fins.
+        To build fins the user needs to specify its name, height, the fin
+        section to be used and the tube the fins will be attached to.
+        Other possible parameters are the number of fins, the distance from the
+        tube's bottom (vertical offset), the angular offset with respect to a
+        certain fixed reference angle, the aspect ratio of the tip and base
+        sections (scale factor) and the theta angle, which is the angle formed
+        by the base section's normal and the line that passes through the
+        centers of the fin sections.
+        
+        When attaching fins to a tube, simply placing the fins at a distance from
+        the rocket axis equal to its tube's radius results in the formation of a
+        small area between the base of the fins and the surface of the tube, for
+        the latter is not plane but cylindrical.
+        For this reason, an additional translation is performed to match the
+        base section's edges with the tube's surface."""
     def __init__(self, name, height, finSection, tube, finNumber=4,
                  verticalOffset=0, angularOffset=0, scaleFactor=1, theta=0):
         self.name = name
@@ -23,39 +38,39 @@ class Fins(object):
         tube.addFins(self)
 
     def getHeight(self):
-        """gets height"""
+        """Gets the fins' height."""
         return self.height
 
     def setHeight(self, h):
-        """sets height"""
+        """Sets the fins' height."""
         self.height = float(h)
 
     def getFinNumber(self):
-        """gets the number of fins"""
+        """Gets the number of fins."""
         return self.finNumber
 
     def setFinNumber(self, n):
-        """sets the number of fins in the set"""
+        """Sets the number of fins."""
         self.finNumber = n
 
     def getVerticalOffset(self):
-        """gets the vertical offset"""
+        """Gets the vertical offset."""
         return self.verticalOffset
 
     def setVerticalOffset(self, l):
-        """sets vertical offset"""
+        """Sets vertical offset."""
         self.verticalOffset = l
 
     def getAngularOffset(self):
-        """gets angular offset"""
+        """Gets angular offset."""
         return self.angularOffset
 
     def setAngularOffset(self, theta):
-        """sets angular offset"""
+        """Sets angular offset."""
         self.angularOffset = theta
 
     def buildFins(self):
-        """builds the group of fins"""
+        """Builds the fins."""
         width = self.finSection.getHeight()
         radialAdjustment = self.radius - math.sqrt(self.radius**2 -
                                                    (width/2)**2) + 0.001
@@ -70,7 +85,8 @@ class Fins(object):
         OZ = geompy.MakeVectorDXDYDZ(math.cos(self.theta + math.pi/2),
                                      0,
                                      math.sin(self.theta + math.pi/2))
-        fin = geompy.MakePrismVecH(face, OZ, self.height/math.cos(self.theta), self.scaleFactor)
+        fin = geompy.MakePrismVecH(face, OZ, self.height/math.cos(self.theta),
+                                   self.scaleFactor)
         
         OX = geompy.MakeVectorDXDYDZ(1, 0, 0)
         fins = []

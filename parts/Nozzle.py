@@ -8,7 +8,10 @@ import math
 # import BodyPart
 
 class Nozzle(object):
-    """represents a nozzle part"""
+    """Represents a nozzle part.
+        Nozzles are cone trunks needed to connect two tubular parts
+        of different radius.
+        At the moment, they can't have fins."""
     def __init__(self, name, firstRadius, secondRadius, length):
 #        BodyPart.__init__(self, name, length)
         self.name = name

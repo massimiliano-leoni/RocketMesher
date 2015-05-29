@@ -6,25 +6,24 @@ geompy = geomBuilder.New(salome.myStudy)
 import math
 
 class Body(object):
-    """represents the main body of the rocket"""
+    """Represents the main body of the rocket.
+        Holds its length, radius and the list of the sections composing it."""
     def __init__(self):
         self.sections = []
         self.length = 0
         self.radius = 0
 
     def addSection(self, section):
-        """adds a section to the main body"""
+        """Adds a section to the main body."""
         self.sections.append(section)
         section.position = self.length
         self.length += section.length
         self.radius = max(self.radius,section.radius)
 
-    def setOgive(self, ogive):
-        """sets the ogive"""
-        self.ogive = ogive
-
     def buildBody(self):
-        """builds the body geometry of the rocket"""
+        """Builds the body geometry of the rocket.
+            This is done by rotating the rocket profile around
+            its axis."""
         OX = geompy.MakeVectorDXDYDZ(1, 0, 0)
 
         parts = []

@@ -6,7 +6,15 @@ geompy = geomBuilder.New(salome.myStudy)
 import math
 
 class Ogive(object):
-    """represents an ogive"""
+    ##  Represents a rocket ogive.
+    #   The ogive can be represented by an arbitrary real function of real
+    #   variable.
+    #   For example, one could choose a Von Karman profile creating an ogive
+    #   with expression parameter set to
+    #   \f[
+    #       \frac{4.5}{\sqrt{\pi}} \sqrt{\arccos \left(\frac{2t}{35}-1\right)
+    #       - \frac{1}{2} \sin \left(2\arccos\left({\frac{2t}{35}-1}\right)\right)}
+    #   \f]
     def __init__(self, name, length, expression):
         self.name = name
         self.length = length

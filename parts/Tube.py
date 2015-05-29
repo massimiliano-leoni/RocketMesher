@@ -8,7 +8,11 @@ import math
 # import BodyPart
 
 class Tube(object):
-    """represents a cylindrical part"""
+    """Represents a tubular part.
+        A tube is identified by its length and radius; a tube also has a name
+        that is assigned upon instantiation.
+        Apart from basic infos, a tube also stores the list of the fins it is
+        equipped with."""
     def __init__(self, name, radius, length):
 #        BodyPart.__init__(self, name, length)
         self.name = name
@@ -20,5 +24,7 @@ class Tube(object):
         self.fins = []
 
     def addFins(self, newFins):
-        """add set of fins to the tube"""
+        """Add set of fins to the tube.
+            Once a fin group has been created, use this method to attach it to
+            the tube."""
         self.fins.append(newFins)
