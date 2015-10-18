@@ -18,15 +18,25 @@ class FinSection(object):
     def __init__(self, name):
         self.name = name
         self.points = []
+        self._profile = None
 
-    def getProfile(self):
+    @property
+    def profile(self):
         """Gets the fin profile."""
-        return self.profile
+        return self._profile
     
-    def setProfile(self, profile):
+    @profile.setter
+    def profile(self, newProfile):
         """Sets the fin profile."""
-        self.profile = profile
+        self._profile = newProfile
     
+    @property
+    def height(self):
+        """Calculates the height of the fin."""
+        bb = geompy.BoundingBox(self.profile,True)
+
+        return bb[3]-bb[2]
+        
     def buildProfile(self):
         """Build fin profile."""
         edges = [geompy.MakeEdge(geompy.MakeVertex(self.points[i-1][0],
@@ -39,25 +49,12 @@ class FinSection(object):
 
         self.centerProfile()
 
-    def getHeight(self):
-        """Calculates the height of the fin."""
-        bb = geompy.BoundingBox(self.profile,True)
-
-        return bb[3]-bb[2]
-        
-    def getLength(self):
-        """Calculates the height of the fin."""
-        bb = geompy.BoundingBox(self.profile,True)
-
-        return bb[1]-bb[0]
-        
     def centerProfile(self):
         """Centers the profile with respect to the rocket axis."""
-        self.setProfile(geompy.MakeTranslation(self.getProfile(),
+        self.profile = geompy.MakeTranslation(self.profile,
                                                      0.,
-                                                     -self.getHeight()/2,
-                                                     0.)) 
-
+                                                     -self.height/2,
+                                                     0.)
 
 class RectangularFinSection(FinSection):
     """Represents a fin with rectangular section.
