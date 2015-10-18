@@ -53,7 +53,9 @@ fins = Fins("fins",
              verticalOffset=10,
              angularOffset=0,
              scaleFactor=0.3,
-             theta=math.pi/3)
+             theta=math.pi/3,
+             phi=math.pi/60,
+             phiCtr=(10,1))
 fins.buildFins()
 
 ## put all together
@@ -61,6 +63,10 @@ rocketParts = []
 rocketParts.append(body.body)
 rocketParts.append(fins.fins)
 rocket = geompy.MakeFuseList(rocketParts)
+
+OZ = geompy.MakeVectorDXDYDZ(0, 0, 1)
+geompy.Rotate(rocket,OZ,math.pi)
+geompy.TranslateDXDYDZ(rocket,body.length,0,0)
 
 
 ## create external cylinder
@@ -121,10 +127,10 @@ volFineness = 2
 
 ## toggle and set boundary layer, prismatic or tetrahedral
 boundaryLayer = True
-thickness = 1
+thickness = 0.1
 numberOfLayers = 4
 stretchFactor = 1.2
-fullyTetra = True
+fullyTetra = False
 
 ## define cylinder 2D mesh parameters
 algo2D = mesh.Triangle(smeshBuilder.NETGEN_1D2D)
@@ -165,7 +171,7 @@ n12_params_rocket.SetMinSize(hMinRck)
 mesh.AddHypothesis(algo2Drocket,rocketFacesGroup)
 
 ## compute mesh and submesh
-mesh.Compute()
+#mesh.Compute()
 
 ## split any non-tetrahedron into tetrahedra
 if fullyTetra:
@@ -177,6 +183,6 @@ if fullyTetra:
     mesh.SplitVolumesIntoTetra(smesh.GetFilterFromCriteria([boundaryLayerCrit]),1)
 
 # export to file
-#mesh.ExportMED("/tmp/rocketMesh.med",True)
+mesh.ExportMED("/tmp/rocketMesh.med",True)
 #mesh.ExportSTL("rocketMesh.stl")
 #mesh.ExportUNV("rocketMesh.unv")

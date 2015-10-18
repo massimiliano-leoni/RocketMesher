@@ -177,6 +177,5 @@ if fullyTetra:
     mesh.SplitVolumesIntoTetra(smesh.GetFilterFromCriteria([boundaryLayerCrit]),1)
 
 # export to file
-#mesh.ExportMED("/tmp/rocketMesh.med",True)
+mesh.ExportCGNS("rocketMesh.cgns")
 #mesh.ExportSTL("rocketMesh.stl")
-#mesh.ExportUNV("rocketMesh.unv")

@@ -23,7 +23,8 @@ class Fins(object):
         For this reason, an additional translation is performed to match the
         base section's edges with the tube's surface."""
     def __init__(self, name, height, finSection, tube, finNumber=4,
-                 verticalOffset=0, angularOffset=0, scaleFactor=1, theta=0):
+                 verticalOffset=0, angularOffset=0, scaleFactor=1, theta=0,
+                 phi=0, phiCtr=(0.,0.)):
         self.name = name
         self.height = float(height)
         self.finNumber = finNumber
@@ -35,6 +36,8 @@ class Fins(object):
         self.radius = tube.radius
         self.scaleFactor = scaleFactor
         self.theta = theta
+        self.phi = phi
+        self.phiCtr = phiCtr
         tube.addFins(self)
 
     def getHeight(self):
@@ -71,9 +74,20 @@ class Fins(object):
 
     def buildFins(self):
         """Builds the fins."""
-        width = self.finSection.getHeight()
+        OZ = geompy.MakeVector(
+                geompy.MakeVertex(self.phiCtr[0],self.phiCtr[1],0),
+                geompy.MakeVertex(self.phiCtr[0],self.phiCtr[1],1))
+        self.section = geompy.MakeRotation(self.section,OZ,self.phi)
+
+        print geompy.BoundingBox(self.section)
+        print geompy.BoundingBox(self.finSection.getProfile())
+
+        dims = geompy.BoundingBox(self.section)
+        offset = max(abs(dims[3]),abs(dims[2]))
         radialAdjustment = self.radius - math.sqrt(self.radius**2 -
-                                                   (width/2)**2) + 0.001
+                                                   (offset)**2) \
+                           + 0.001
+
         self.section = \
             geompy.MakeTranslation(self.section,
                                    self.position + self.getVerticalOffset(),
@@ -82,10 +96,10 @@ class Fins(object):
 
         face = geompy.MakeFaceWires([self.section], True)
 
-        OZ = geompy.MakeVectorDXDYDZ(math.cos(self.theta + math.pi/2),
+        VZ = geompy.MakeVectorDXDYDZ(math.cos(self.theta + math.pi/2),
                                      0,
                                      math.sin(self.theta + math.pi/2))
-        fin = geompy.MakePrismVecH(face, OZ, self.height/math.cos(self.theta),
+        fin = geompy.MakePrismVecH(face, VZ, self.height/math.cos(self.theta),
                                    self.scaleFactor)
         
         OX = geompy.MakeVectorDXDYDZ(1, 0, 0)

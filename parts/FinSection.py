@@ -41,10 +41,15 @@ class FinSection(object):
 
     def getHeight(self):
         """Calculates the height of the fin."""
-        minY = min([P[1] for P in self.points])
-        maxY = max([P[1] for P in self.points])
+        bb = geompy.BoundingBox(self.profile,True)
 
-        return maxY - minY
+        return bb[3]-bb[2]
+        
+    def getLength(self):
+        """Calculates the height of the fin."""
+        bb = geompy.BoundingBox(self.profile,True)
+
+        return bb[1]-bb[0]
         
     def centerProfile(self):
         """Centers the profile with respect to the rocket axis."""
