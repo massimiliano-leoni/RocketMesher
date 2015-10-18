@@ -12,19 +12,35 @@ class Fins(object):
         Other possible parameters are the number of fins, the distance from the
         tube's bottom (vertical offset), the angular offset with respect to a
         certain fixed reference angle, the aspect ratio of the tip and base
-        sections (scale factor) and the theta angle, which is the angle formed
+        sections (scale factor), the theta angle, which is the angle formed
         by the base section's normal and the line that passes through the
-        centers of the fin sections.
+        centers of the fin sections, an angle phi that gives a rotation of
+        the finsection in its plane and the center of said rotation.
         
         When attaching fins to a tube, simply placing the fins at a distance from
         the rocket axis equal to its tube's radius results in the formation of a
         small area between the base of the fins and the surface of the tube, for
         the latter is not plane but cylindrical.
         For this reason, an additional translation is performed to match the
-        base section's edges with the tube's surface."""
+        base section's edges with the tube's surface.
+        """
     def __init__(self, name, height, finSection, tube, finNumber=4,
                  verticalOffset=0, angularOffset=0, scaleFactor=1, theta=0,
                  phi=0, phiCtr=(0.,0.)):
+        ##
+        # The constructor
+        # @param name The name of the fin group.
+        # @param height The height of the fin group
+        # @param tube The tube to which the ifn group is attached
+        # @param finNumber The number of fins in the group
+        # @param verticalOffset The distance between the fin group and the
+        #       bottom of the rocket
+        # @param angularOffset The angle of which the fins are rotated around
+        #       the rocket axis
+        # @param scaleFactor The aspect ratio of the tip and base sections
+        # @param theta The angle of extrusion
+        # @param phi The angle of which the section is rotated in its own plane
+        # @param phiCtr The center of rotation of phi
         self.name = name
         self._height = float(height)
         self._finNumber = finNumber

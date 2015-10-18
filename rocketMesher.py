@@ -171,7 +171,7 @@ n12_params_rocket.SetMinSize(hMinRck)
 mesh.AddHypothesis(algo2Drocket,rocketFacesGroup)
 
 ## compute mesh and submesh
-#mesh.Compute()
+mesh.Compute()
 
 ## split any non-tetrahedron into tetrahedra
 if fullyTetra:
