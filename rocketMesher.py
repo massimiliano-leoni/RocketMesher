@@ -14,7 +14,7 @@ from parts.Body import Body
 from parts.Bottom import Bottom
 from parts.Tube import Tube
 from parts.Nozzle import Nozzle
-from parts.Ogive import Ogive
+from parts.Ogive import Ogive, HaackOgive, VonKarman
 from parts.Fins import Fins
 from parts.FinSection import *
 
@@ -30,6 +30,10 @@ tube1 = Tube("tube1",
 ogive = Ogive("ogive",
               length=35,
               expression="4.5/sqrt(pi)*sqrt(acos(2*t/35-1)-0.5*sin(2*acos(2*t/35-1)))")
+ogive = HaackOgive("ogive",
+                   length=35,
+                   radius=4.5,
+                   C=0.1)
 
 body.addSection(bottom)
 body.addSection(tube1)
@@ -171,7 +175,7 @@ n12_params_rocket.SetMinSize(hMinRck)
 mesh.AddHypothesis(algo2Drocket,rocketFacesGroup)
 
 ## compute mesh and submesh
-mesh.Compute()
+# mesh.Compute()
 
 ## split any non-tetrahedron into tetrahedra
 if fullyTetra:

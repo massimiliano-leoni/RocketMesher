@@ -12,6 +12,8 @@ __all__ = [
   'Bottom',
   'Nozzle',
   'Ogive',
+  'HaackOgive',
+  'VonKarman',
   'Tube',
   'Fins',
   'FinSection',
