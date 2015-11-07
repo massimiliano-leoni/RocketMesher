@@ -19,4 +19,4 @@ class Nozzle(object):
         self.position = 0
         self.expression = str(firstRadius)+"+t*"+str(1.0*(secondRadius-firstRadius)/length)
         self.profile = geompy.MakeCurveParametric("t",self.expression , "0", 0,
-                                         length, 100, GEOM.Interpolation, True)
+                                         length, 100, GEOM.Polyline, True)

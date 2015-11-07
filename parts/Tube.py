@@ -20,7 +20,7 @@ class Tube(object):
         self.position = 0
         self.radius = radius
         self.profile = geompy.MakeCurveParametric("t",str(radius) , "0", 0,
-                                                  length, 100, GEOM.Interpolation, True)
+                                                  length, 100, GEOM.Polyline, True)
         self.fins = []
 
     def addFins(self, newFins):
