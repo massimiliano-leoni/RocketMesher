@@ -34,4 +34,4 @@ class Body(object):
 
         self.profile = geompy.MakeFuseList(parts,True)
         self.body = geompy.MakeRevolution(self.profile, OX, 2*math.pi)
-        self.body = geompy.MakeSolid([self.body])
+        self.body = geompy.MakeSolidFromConnectedFaces([self.body], True)
