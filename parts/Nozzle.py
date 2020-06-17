@@ -8,7 +8,10 @@ import math
 # import BodyPart
 
 class Nozzle(object):
-    """represents a nozzle part"""
+    """Represents a nozzle part.
+        Nozzles are cone trunks needed to connect two tubular parts
+        of different radius.
+        At the moment, they can't have fins."""
     def __init__(self, name, firstRadius, secondRadius, length):
 #        BodyPart.__init__(self, name, length)
         self.name = name
@@ -16,4 +19,4 @@ class Nozzle(object):
         self.position = 0
         self.expression = str(firstRadius)+"+t*"+str(1.0*(secondRadius-firstRadius)/length)
         self.profile = geompy.MakeCurveParametric("t",self.expression , "0", 0,
-                                         length, 100, GEOM.Interpolation, True)
+                                         length, 100, GEOM.Polyline, True)
