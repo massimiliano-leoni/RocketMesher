@@ -2,11 +2,11 @@ import salome
 salome.salome_init()
 import GEOM
 from salome.geom import geomBuilder
-geompy = geomBuilder.New(salome.myStudy)
+geompy = geomBuilder.New()
 
 import SMESH
 from salome.smesh import smeshBuilder
-smesh = smeshBuilder.New(salome.myStudy)
+smesh = smeshBuilder.New()
 
 import math
 
@@ -27,9 +27,6 @@ bottom = Bottom("bottom",
 tube1 = Tube("tube1",
              radius=4.5,
              length=175)
-ogive = Ogive("ogive",
-              length=35,
-              expression="4.5/sqrt(pi)*sqrt(acos(2*t/35-1)-0.5*sin(2*acos(2*t/35-1)))")
 ogive = HaackOgive("ogive",
                    length=35,
                    radius=4.5,
@@ -130,7 +127,7 @@ hMinVol = 0.03
 volFineness = 2
 
 ## toggle and set boundary layer, prismatic or tetrahedral
-boundaryLayer = True
+boundaryLayer = False
 thickness = 0.1
 numberOfLayers = 4
 stretchFactor = 1.2
@@ -175,7 +172,7 @@ n12_params_rocket.SetMinSize(hMinRck)
 mesh.AddHypothesis(algo2Drocket,rocketFacesGroup)
 
 ## compute mesh and submesh
-# mesh.Compute()
+mesh.Compute()
 
 ## split any non-tetrahedron into tetrahedra
 if fullyTetra:

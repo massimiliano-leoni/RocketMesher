@@ -1,11 +1,11 @@
-import Bottom
-import Tube
-import Body
-import Nozzle
-import Ogive
-import Fins
-import FinSection
-import BodyPart
+from parts import Bottom
+from parts import Tube
+from parts import Body
+from parts import Nozzle
+from parts import Ogive
+from parts import Fins
+from parts import FinSection
+from parts import BodyPart
 
 __all__ = [
   'Body',

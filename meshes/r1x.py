@@ -2,11 +2,11 @@ import salome
 salome.salome_init()
 import GEOM
 from salome.geom import geomBuilder
-geompy = geomBuilder.New(salome.myStudy)
+geompy = geomBuilder.New()
 
 import SMESH
 from salome.smesh import smeshBuilder
-smesh = smeshBuilder.New(salome.myStudy)
+smesh = smeshBuilder.New()
 
 import math
 
@@ -120,7 +120,7 @@ hMinVol = 0.03
 volFineness = 2
 
 ## toggle and set boundary layer, prismatic or tetrahedral
-boundaryLayer = True
+boundaryLayer = False
 thickness = 1
 numberOfLayers = 4
 stretchFactor = 1.2
