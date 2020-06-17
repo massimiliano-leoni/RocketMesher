@@ -12,6 +12,6 @@ class Bottom(object):
         self.name = name
         self.length = 0
         self.radius = radius
-        self.profile = geompy.MakeCurveParametric("0","t" , "0", 0,
-                                 self.radius, 100, GEOM.Polyline, True)
+        self.profile = geompy.MakeCurveParametric("0", "t", "0", 0,
+                                 self.radius, 1, GEOM.Polyline, True)
 
