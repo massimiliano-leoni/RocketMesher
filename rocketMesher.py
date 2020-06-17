@@ -130,7 +130,7 @@ hMinVol = 0.03
 volFineness = 2
 
 ## toggle and set boundary layer, prismatic or tetrahedral
-boundaryLayer = True
+boundaryLayer = False
 thickness = 0.1
 numberOfLayers = 4
 stretchFactor = 1.2
@@ -175,7 +175,7 @@ n12_params_rocket.SetMinSize(hMinRck)
 mesh.AddHypothesis(algo2Drocket,rocketFacesGroup)
 
 ## compute mesh and submesh
-# mesh.Compute()
+mesh.Compute()
 
 ## split any non-tetrahedron into tetrahedra
 if fullyTetra:

@@ -120,7 +120,7 @@ hMinVol = 0.03
 volFineness = 2
 
 ## toggle and set boundary layer, prismatic or tetrahedral
-boundaryLayer = True
+boundaryLayer = False
 thickness = 1
 numberOfLayers = 4
 stretchFactor = 1.2
